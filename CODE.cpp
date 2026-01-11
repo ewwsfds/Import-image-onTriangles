@@ -55,6 +55,8 @@ int main()
     // 2️⃣ Initialize GLAD
     // ----------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) { std::cout << "GLAD failed\n"; return -1; }
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // ----------------------------
     // 3️⃣ Vertex data + texture coords
@@ -102,11 +104,23 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     int width, height, nrChannels;
-    unsigned char* data = stbi_load("image.jpg", &width, &height, &nrChannels, 0);
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* data = stbi_load("image.jpg", &width, &height, &nrChannels, 4);
     if (data)
     {
-        GLenum format = nrChannels == 4 ? GL_RGBA : GL_RGB;
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(
+            GL_TEXTURE_2D,
+            0,
+            GL_RGBA,
+            width,
+            height,
+            0,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            data
+        );
+
+
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
@@ -176,4 +190,3 @@ int main()
     glfwTerminate();
     return 0;
 }
-
